@@ -2,6 +2,8 @@ package com.quan.url_shorten_service.controller;
 
 import com.quan.url_shorten_service.dto.ApiErrorResponse;
 import com.quan.url_shorten_service.exception.ExpiredShortUrlException;
+import com.quan.url_shorten_service.exception.ConflictException;
+import com.quan.url_shorten_service.exception.InvalidCredentialsException;
 import com.quan.url_shorten_service.exception.ResourceNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +17,16 @@ import java.util.Map;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    @ExceptionHandler(ConflictException.class)
+    public ResponseEntity<ApiErrorResponse> handleConflict(ConflictException exception) {
+        return error(HttpStatus.CONFLICT, exception.getMessage());
+    }
+
+    @ExceptionHandler(InvalidCredentialsException.class)
+    public ResponseEntity<ApiErrorResponse> handleInvalidCredentials(InvalidCredentialsException exception) {
+        return error(HttpStatus.UNAUTHORIZED, exception.getMessage());
+    }
 
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<ApiErrorResponse> handleNotFound(ResourceNotFoundException exception) {

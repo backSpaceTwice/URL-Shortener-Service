@@ -11,6 +11,7 @@ import com.quan.url_shorten_service.exception.ExpiredShortUrlException;
 import com.quan.url_shorten_service.exception.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.security.SecureRandom;
 import java.time.Instant;
@@ -28,6 +29,7 @@ public class ShortUrlService {
     private final OriginalUrlRepository originalUrlRepository;
     private final SecureRandom secureRandom;
 
+    @Autowired
     public ShortUrlService(ShortUrlRepository shortUrlRepository, OriginalUrlRepository originalUrlRepository) {
         this(shortUrlRepository, originalUrlRepository, new SecureRandom());
     }
