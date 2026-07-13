@@ -38,9 +38,9 @@ public class ShortUrlController {
     @PostMapping
     public ResponseEntity<ShortUrlResponse> create(
             @Valid @RequestBody CreateShortUrlRequest request,
-            @RequestAttribute(AUTHENTICATED_USER_ID) UUID userId
+            @RequestAttribute(value = AUTHENTICATED_USER_ID, required = false) UUID userId
     ) {
-        User user = userRepository.findById(userId)
+        User user = userId == null ? null : userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
         ShortUrlResponse response = shortUrlService.create(request, user);
         return ResponseEntity.created(URI.create("/r/" + response.code())).body(response);

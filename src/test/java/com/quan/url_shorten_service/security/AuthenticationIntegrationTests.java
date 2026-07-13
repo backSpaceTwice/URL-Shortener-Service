@@ -13,6 +13,7 @@ import tools.jackson.databind.ObjectMapper;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -50,16 +51,21 @@ class AuthenticationIntegrationTests {
 
     @Test
     void protectedEndpointRejectsMissingAndInvalidTokens() throws Exception {
-        mockMvc.perform(post("/api/urls")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"url\":\"https://example.com\"}"))
+        mockMvc.perform(get("/api/urls"))
                 .andExpect(status().isUnauthorized());
 
-        mockMvc.perform(post("/api/urls")
-                        .header("Authorization", "Bearer invalid-token")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"url\":\"https://example.com\"}"))
+        mockMvc.perform(get("/api/urls")
+                        .header("Authorization", "Bearer invalid-token"))
                 .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void urlCreationIsAvailableWithoutAnAccount() throws Exception {
+        mockMvc.perform(post("/api/urls")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"url\":\"https://example.com/public\"}"))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.code").isNotEmpty());
     }
 
     @Test
